@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 fw-bold text-center mb-5 gradient-text">
+        Welcome 📦 Gadget BD
+    </h1>
+
+    <div class="row">
+        <!-- Smartphones -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow product-card h-100">
+                <img src="~/images/lep20.jpg" asp-append-version="true" class="card-img-top" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary fw-semibold">Smartphones</h5>
+                    <p class="card-text flex-grow-1">Latest Android & iOS mobiles with high-performance features.</p>
+                    <a asp-controller="Shopping" asp-action="Index" class="btn btn-outline-primary mt-auto">View More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Laptops -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow product-card h-100">
+                <img src="~/images/lep3.jpg" asp-append-version="true" class="card-img-top" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary fw-semibold">Laptops</h5>
+                    <p class="card-text flex-grow-1">Modern laptops for gaming, work, and personal use good performance.</p>
+                    <a asp-controller="Shopping" asp-action="Index" class="btn btn-outline-primary mt-auto">View More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessories -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow product-card h-100">
+                <img src="~/images/lep2.jpg" asp-append-version="true" class="card-img-top" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary fw-semibold">Accessories</h5>
+                    <p class="card-text flex-grow-1">Headphones, chargers, cases, and more essential add-ons.</p>
+                    <a asp-controller="Shopping" asp-action="Index" class="btn btn-outline-primary mt-auto">View More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .gradient-text {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .product-card {
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+    .card-img-top {
+        height: 220px;
+        object-fit: cover;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .btn-outline-primary {
+        border-radius: 20px;
+        transition: all 0.3s;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+    @@media (max-width: 768px) {
+        .gradient-text {
+            font-size: 28px;
+        }
+
+        .card-img-top {
+            height: 180px;
+        }
+    }
+
+</style>

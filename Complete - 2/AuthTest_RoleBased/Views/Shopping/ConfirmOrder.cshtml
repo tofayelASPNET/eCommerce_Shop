@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Order Confirmed";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-success">
+        <div class="card-header bg-success text-white text-center">
+            <h3><i class="bi bi-check-circle-fill"></i> Order Confirmed</h3>
+        </div>
+        <div class="card-body text-center">
+            <h4 class="text-success mb-3">Your order has been placed successfully!</h4>
+            <p class="fs-5">Thank you for shopping with us. We appreciate your trust in our service.</p>
+
+            <div class="mt-4">
+                <a class="btn btn-outline-primary me-2" href="@Url.Action("Index", "Shopping")">
+                    <i class="bi bi-cart-plus"></i> Continue Shopping
+                </a>
+                <a class="btn btn-outline-secondary" href="@Url.Action("MyOrders", "Shopping")">
+                    <i class="bi bi-list-check"></i> View My Orders
+                </a>
+            </div>
+        </div>
+        <div class="card-footer text-muted text-center">
+            <small>We will notify you once your order is shipped.</small>
+        </div>
+    </div>
+</div>
+
+
+
+
+@* @{
+    ViewData["Title"] = "Order Confirmed";
+}
+
+<div class="alert alert-success">
+    <h2>Your order has been placed successfully!</h2>
+    <p>Thank you for shopping with us.</p>
+</div>
+
+<p>
+    <a class="btn btn-primary" href="@Url.Action("Index", "Shopping")">Continue Shopping</a>
+    <a class="btn btn-secondary" href="@Url.Action("MyOrders", "Shopping")">View My Orders</a>
+</p> *@

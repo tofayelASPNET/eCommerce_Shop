@@ -1,0 +1,286 @@
+﻿@model PaginatedList<AuthTest_RoleBased.Models.Product>
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor _httpContextAccessor;
+@{
+    ViewData["Title"] = "Shopping";
+    double cp = ViewBag.CurrentPage;
+    double tp = ViewBag.TotalPages;
+
+    string GetSortIcon(string column)
+    {
+        var currentSort = ViewBag.CurrentSort as string ?? "";
+        if (currentSort.StartsWith(column))
+        {
+            if (currentSort.EndsWith("_asc")) return "<i class='bi bi-caret-up-fill'></i>";
+            if (currentSort.EndsWith("_desc")) return "<i class='bi bi-caret-down-fill'></i>";
+        }
+        return "<i class='bi bi-caret-expand text-muted'></i>";
+    }
+}
+
+
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="~/images/Banner/discount4.jpg" class="d-block w-100" style="height: 300px; object-fit: contain;" alt="Banner Image 1">
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/Banner/discount1.jpg" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Banner Image 2">
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/Banner/discount3.jpg" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Banner Image 3">
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+
+
+<div class="announcement-banner">
+    <div class="scrolling-text">
+        এই প্রতিষ্ঠানটি দক্ষতার সাথে নতুন এবং পুরাতন মডেলের মোবাইল, লেপটপ সংগ্রহ তে রেখে বিক্রয় করে।বিশ্বস্ততা ও মানের নিশ্চয়তা একসাথে!
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-3 shadow-sm">
+                <form asp-action="Index" method="get" id="autoSearchForm" class="d-flex gap-2">
+                    <input type="text" name="userText" value="@ViewBag.sWord" class="form-control" id="productSearch" placeholder="Search by Product name or Unit..." />
+                    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+                    <a asp-action="Index" class="btn btn-outline-info">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-end mb-2 pe-4">
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSortParam" asp-route-userText="@ViewBag.sWord" class="btn btn-outline-primary btn-sm me-2">
+                Sort by Name @Html.Raw(GetSortIcon("name"))
+            </a>
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.PriceSortParam" asp-route-userText="@ViewBag.sWord" class="btn btn-outline-success btn-sm">
+                Sort by Price @Html.Raw(GetSortIcon("price"))
+            </a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col product-card">
+                <div class="card shadow-sm">
+                    <img src="@item.Photo" class="card-img-top" alt="@item.Name" />
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@item.Unit</p>
+                        <p class="card-text text-success">৳ @item.Price.ToString("F2")</p>
+                        <form asp-action="AddToCart" method="post" class="d-flex justify-content-between align-items-center">
+                            <input type="hidden" name="pId" value="@item.ProductId" />
+                            <input type="number" name="qty" value="1" min="1" max="500" class="form-control form-control-sm" style="width: 80px;" />
+                            <button type="submit" class="btn btn-success btn-sm">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (tp > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(cp == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-route-page="1" asp-route-userText="@ViewBag.sWord" asp-route-sortOrder="@ViewBag.CurrentSort">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item @(cp <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-route-page="@(cp - 1)" asp-route-userText="@ViewBag.sWord" asp-route-sortOrder="@ViewBag.CurrentSort">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                @for (int k = 1; k <= (int)tp; k++)
+                {
+                    if (k >= (int)cp - 2 && k <= (int)cp + 2)
+                    {
+                        <li class="page-item @(k == (int)cp ? "active" : "")">
+                            <a class="page-link" asp-route-page="@k" asp-route-userText="@ViewBag.sWord" asp-route-sortOrder="@ViewBag.CurrentSort">@k</a>
+                        </li>
+                    }
+                }
+                <li class="page-item @(cp >= tp ? "disabled" : "")">
+                    <a class="page-link" asp-route-page="@(cp + 1)" asp-route-userText="@ViewBag.sWord" asp-route-sortOrder="@ViewBag.CurrentSort">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item @(cp == tp ? "disabled" : "")">
+                    <a class="page-link" asp-route-page="@tp" asp-route-userText="@ViewBag.sWord" asp-route-sortOrder="@ViewBag.CurrentSort">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="d-flex justify-content-center mt-2">
+                <form id="gotoForm" asp-action="Index" method="get" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="userText" value="@ViewBag.sWord" />
+                    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+                    <input type="number" name="page" id="goToPage"
+                           class="form-control form-control-sm"
+                           style="width: 100px;" placeholder="Go to page..."
+                           min="1" max="@tp" required />
+                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-box-arrow-in-right"></i> Go
+                    </button>
+                </form>
+            </div>
+        </nav>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Auto-submit search input after typing stops (debounce)
+            let typingTimer;
+            const doneTypingInterval = 800;
+
+            $('#productSearch').on('input', function () {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(function () {
+                    $('#autoSearchForm').submit();
+                }, doneTypingInterval);
+            });
+
+            // Page validation for "Go to"
+            $("#gotoForm").on("submit", function (e) {
+                const pageInput = $("#goToPage");
+                const maxPage = parseInt("@tp");
+                const pageValue = parseInt(pageInput.val());
+
+                if (isNaN(pageValue) || pageValue < 1 || pageValue > maxPage) {
+                    e.preventDefault();
+                    pageInput.addClass("is-invalid");
+                    alert("Please enter a valid page number between 1 and " + maxPage);
+                } else {
+                    pageInput.removeClass("is-invalid");
+                }
+            });
+        });
+    </script>
+}
+
+
+
+<style>
+    body {
+        background-color: aliceblue;
+    }
+
+    .carousel-inner img {
+        height: 400px;
+        object-fit: cover;
+    }
+
+    .carousel-control-prev-icon, .carousel-control-next-icon {
+        background-color: black;
+    }
+
+    .container {
+        max-width: 1200px;
+    }
+
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .alert {
+        border-radius: 8px;
+    }
+
+    .row-cols-md-3 .col {
+        display: flex;
+        justify-content: center;
+    }
+
+    .text-success {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: purple;
+        border-color: #28a745;
+    }
+
+    .announcement-banner {
+        overflow: hidden;
+        white-space: nowrap;
+        background: #0d6efd;
+        color: white;
+        padding: 10px 0;
+        position: relative;
+        font-size: 16px;
+        font-family: 'Bangla', sans-serif;
+    }
+
+    .scrolling-text {
+        display: inline-block;
+        padding-left: 100%;
+        animation: scroll-left 60s linear infinite;
+    }
+
+    @@keyframes scroll-left {
+        0% {
+            transform: translateX(0%);
+        }
+
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+
+    input.is-invalid {
+        border-color: red;
+    }
+
+    .product-card {
+        padding: 0.5rem;
+    }
+</style>

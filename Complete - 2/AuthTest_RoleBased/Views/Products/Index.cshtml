@@ -1,0 +1,213 @@
+﻿@model PaginatedList<AuthTest_RoleBased.Models.Product>
+
+@{
+    ViewData["Title"] = "Product List";
+
+    double cp = ViewBag.cp;
+    double tp = ViewBag.tp;
+    int i = ((int)cp - 1) * ViewBag.pSize + 1;
+
+    string GetSortIcon(string column)
+    {
+        var currentSort = ViewBag.currentSort as string ?? "";
+        if (currentSort.StartsWith(column))
+        {
+            if (currentSort.EndsWith("_asc")) return "<i class='bi bi-caret-up-fill'></i>";
+            if (currentSort.EndsWith("_desc")) return "<i class='bi bi-caret-down-fill'></i>";
+        }
+        return "<i class='bi bi-caret-expand text-muted'></i>";
+    }
+}
+
+<h1 class="text-center text-info mb-4">
+    <i class="bi bi-box-seam me-2"></i> Product List
+</h1>
+
+<div class="row justify-content-center mb-3">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-3 shadow-sm">
+            <form asp-action="Index" method="get" class="d-flex gap-2">
+                <input type="text" name="userText" value="@ViewBag.sWord" class="form-control" placeholder="Search by name or unit..." />
+                <input type="hidden" name="sortOrder" value="@ViewBag.currentSort" />
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+
+                @if (!string.IsNullOrEmpty(ViewBag.sWord as string))
+                {
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@ViewBag.currentSort"
+                       asp-route-page="@ViewBag.cp"
+                       class="btn btn-outline-danger">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                }
+
+                <a asp-action="Index"
+                   asp-route-sortOrder=""
+                   asp-route-userText="@ViewBag.sWord"
+                   asp-route-page="@cp"
+                   class="btn btn-outline-info">
+                    <i class="bi bi-arrow-repeat"></i> Reset Order
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-12 col-lg-11">
+        <div class="card shadow-lg p-2">
+            <div class="text-center mb-3">
+                <a asp-action="Create" class="btn btn-success btn-lg">
+                    <i class="bi bi-plus-circle"></i> Create New Product
+                </a>
+            </div>
+
+            @if (ViewBag.count != null)
+            {
+                <div class="mb-3 text-center text-secondary fw-semibold">
+                    Total <strong>@ViewBag.count</strong> products found
+                </div>
+            }
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th style="width:5%;">Sl No</th>
+                            <th style="width:22%;">
+                                <a asp-action="Index"
+                                   asp-route-sortOrder="@ViewBag.NameSortParam"
+                                   asp-route-userText="@ViewBag.sWord"
+                                   asp-route-page="@cp"
+                                   class="text-decoration-none d-flex align-items-center justify-content-between @(ViewBag.currentSort?.StartsWith("name") == true ? "text-danger fw-bold" : "text-secondary")">
+                                    Product Name
+                                    @Html.Raw(GetSortIcon("name"))
+                                </a>
+                            </th>
+                            <th style="width:10%;">Photo</th>
+                            <th style="width:10%;">
+                                <a asp-action="Index"
+                                   asp-route-sortOrder="@ViewBag.PriceSortParam"
+                                   asp-route-userText="@ViewBag.sWord"
+                                   asp-route-page="@cp"
+                                   class="text-decoration-none d-flex align-items-center justify-content-between @(ViewBag.currentSort?.StartsWith("price") == true ? "text-danger fw-bold" : "text-secondary")">
+                                    Price
+                                    @Html.Raw(GetSortIcon("price"))
+                                </a>
+                            </th>
+                            <th style="width:40%;">Unit</th>
+                            <th style="width:5%;">Quantity</th>
+                            <th style="width:8%;" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@item.Name</td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(item.Photo))
+                                    {
+                                        <img src="@item.Photo" alt="Image" class="img-thumbnail" style="width: 60px; height: 60px;" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No Image</span>
+                                    }
+                                </td>
+                                <td>৳ @item.Price.ToString("F2")</td>
+                                <td>@item.Unit</td>
+                                <td>@item.Quantity</td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm me-1">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.ProductId" method="post" class="d-inline" onsubmit="return confirm('Are you sure to delete this product?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (tp > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item @(cp == 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="1"
+                               asp-route-userText="@ViewBag.sWord"
+                               asp-route-sortOrder="@ViewBag.currentSort">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @(cp <= 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(cp - 1)"
+                               asp-route-userText="@ViewBag.sWord"
+                               asp-route-sortOrder="@ViewBag.currentSort">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int k = 1; k <= (int)tp; k++)
+                        {
+                            if (k >= (int)cp - 2 && k <= (int)cp + 2)
+                            {
+                                <li class="page-item @(k == (int)cp ? "active" : "")">
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-page="@k"
+                                       asp-route-userText="@ViewBag.sWord"
+                                       asp-route-sortOrder="@ViewBag.currentSort">@k</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @(cp >= tp ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(cp + 1)"
+                               asp-route-userText="@ViewBag.sWord"
+                               asp-route-sortOrder="@ViewBag.currentSort">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @(cp == tp ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@tp"
+                               asp-route-userText="@ViewBag.sWord"
+                               asp-route-sortOrder="@ViewBag.currentSort">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="d-flex justify-content-center mt-3">
+                    <form asp-action="Index" method="get" class="d-flex align-items-center gap-2">
+                        <input type="number" name="page" min="1" max="@ViewBag.tp" class="form-control" placeholder="Go to page..." style="width: 120px;" required />
+                        <input type="hidden" name="userText" value="@ViewBag.sWord" />
+                        <input type="hidden" name="sortOrder" value="@ViewBag.currentSort" />
+                        <button type="submit" class="btn btn-primary">Go</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
